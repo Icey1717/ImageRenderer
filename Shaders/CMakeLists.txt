@@ -15,14 +15,18 @@ file(GLOB_RECURSE GLSL_SOURCE_FILES
 
 message(Found: ${GLSL_SOURCE_FILES})
 
-message("Project directory: ${CMAKE_SOURCE_DIR}")
+if(NOT DEFINED SHADER_OUTPUT_DIR)
+    message(FATAL_ERROR "The SHADER_OUTPUT_DIR value is not defined! Please set it.")
+endif()
+
+message("Output directory: ${CMAKE_SOURCE_DIR}")
 
 foreach(GLSL ${GLSL_SOURCE_FILES})
 	get_filename_component(FILE_NAME ${GLSL} NAME)
-	set(SPIRV "${CMAKE_SOURCE_DIR}/bin/WIN/shaders/${FILE_NAME}.spv")
+	set(SPIRV "${SHADER_OUTPUT_DIR}/shaders/${FILE_NAME}.spv")
 	add_custom_command(
 		OUTPUT ${SPIRV}
-		COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_SOURCE_DIR}/bin/WIN/shaders"
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${SHADER_OUTPUT_DIR}/shaders"
 		COMMAND ${GLSL_VALIDATOR} -V ${GLSL} -o ${SPIRV}
 		DEPENDS ${GLSL})
 	list(APPEND SPIRV_BINARY_FILES ${SPIRV})
